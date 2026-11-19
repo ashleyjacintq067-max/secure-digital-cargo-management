@@ -1,0 +1,22 @@
+secure_digital_cargo_management_full_system/
+├── app.py, config.py, db.py, models.py, security.py, schema.sql
+├── requirements.txt, .env.example, .gitignore, README.md
+├── routes/
+│   ├── auth.py
+│   ├── dashboard.py
+│   ├── cargo.py
+│   ├── ports.py
+│   ├── vessels.py
+│   ├── reports.py
+│   └── audit.py
+├── templates/
+│   ├── base.html, dashboard.html
+│   ├── auth/login.html
+│   ├── cargo/list.html, form.html, detail.html
+│   ├── ports/list.html, form.html
+│   ├── vessels/list.html, form.html
+│   ├── reports/index.html, audit/index.html
+│   └── errors/403.html, 404.html
+└── static/
+    ├── css/style.css
+    └── js/main.js
