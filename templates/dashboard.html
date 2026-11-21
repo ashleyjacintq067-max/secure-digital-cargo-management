@@ -1,1 +1,246 @@
-{% extends "base.html" %}{% block title %}Dashboard{% endblock %}{% block content %}<div class="heading"><div><p class="eyebrow">OVERVIEW</p><h1>Operations dashboard</h1></div><a class="primary" href="{{ url_for('cargo.new') }}">Record cargo</a></div><div class="stats"><article><span>Total cargo</span><b>{{ total }}</b></article><article><span>Registered ports</span><b>{{ ports }}</b></article><article><span>Registered vessels</span><b>{{ vessels }}</b></article></div><div class="columns"><section class="panel"><h2>Cargo by status</h2>{% for s in statuses %}<p class="split"><span>{{ s.current_status|replace('_',' ')|title }}</span><b>{{ s.total }}</b></p>{% else %}<p class="muted">No cargo records yet.</p>{% endfor %}</section><section class="panel"><h2>Recent events</h2>{% for e in events %}<p><b>{{ e.event_type|replace('_',' ')|title }}</b><br><small>{{ e.cargo_reference }} · {{ e.port_name or 'Port not specified' }} · {{ e.event_time }}</small></p>{% else %}<p class="muted">No recent events.</p>{% endfor %}</section></div><section class="panel"><h2>Recently recorded cargo</h2><div class="scroll"><table><tr><th>Reference</th><th>Description</th><th>Origin</th><th>Quantity</th><th>Status</th></tr>{% for c in recent %}<tr><td><a href="{{ url_for('cargo.detail',cid=c.cargo_id) }}">{{ c.cargo_reference }}</a></td><td>{{ c.description }}</td><td>{{ c.origin_port or '—' }}</td><td>{{ c.quantity }} {{ c.unit_of_measure }}</td><td>{{ c.current_status }}</td></tr>{% else %}<tr><td colspan="5">No cargo registered.</td></tr>{% endfor %}</table></div></section>{% endblock %}
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard | SDCMS{% endblock %}
+
+{% block content %}
+
+<div class="welcome-banner">
+
+    <div class="welcome-content">
+        <span class="welcome-tag">MARITIME OPERATIONS</span>
+
+        <h1>Welcome to Operations</h1>
+
+        <p>
+            Monitor cargo records, port activities and vessel
+            information across regional ports.
+        </p>
+
+        <a class="record-button" href="{{ url_for('cargo.new') }}">
+            + Record New Cargo
+        </a>
+    </div>
+
+    <div class="welcome-decoration">
+        <span>⚓</span>
+        <small>SECURE GLOBAL TRADE</small>
+    </div>
+
+</div>
+
+<div class="section-heading">
+    <div>
+        <span class="section-tag">SYSTEM OVERVIEW</span>
+        <h2>Operations Summary</h2>
+    </div>
+</div>
+
+<div class="stats-grid">
+
+    <article class="stat-card">
+        <div class="stat-icon blue">▣</div>
+        <div>
+            <span>Total Cargo</span>
+            <h2>{{ total }}</h2>
+            <small>Recorded cargo entries</small>
+        </div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-icon cyan">⚓</div>
+        <div>
+            <span>Registered Ports</span>
+            <h2>{{ ports }}</h2>
+            <small>Ports in the system</small>
+        </div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-icon orange">♧</div>
+        <div>
+            <span>Registered Vessels</span>
+            <h2>{{ vessels }}</h2>
+            <small>Registered vessels</small>
+        </div>
+    </article>
+
+</div>
+
+<div class="dashboard-grid">
+
+    <section class="content-card status-card">
+
+        <div class="card-heading">
+            <div>
+                <span class="section-tag">CARGO ANALYTICS</span>
+                <h3>Cargo by Status</h3>
+            </div>
+            <span class="card-symbol">◉</span>
+        </div>
+
+        {% set status_total = namespace(value=0) %}
+
+        {% for s in statuses %}
+            {% set status_total.value = status_total.value + s.total %}
+        {% endfor %}
+
+        {% if statuses %}
+
+            {% for s in statuses %}
+
+                {% set percentage = (s.total * 100 / status_total.value) if status_total.value else 0 %}
+
+                <div class="status-row">
+
+                    <div class="status-label">
+                        <span>
+                            {{ s.current_status|replace('_',' ')|title }}
+                        </span>
+                        <strong>{{ s.total }}</strong>
+                    </div>
+
+                    <div class="progress-track">
+                        <div class="progress-fill"
+                             style="width: {{ percentage }}%">
+                        </div>
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty-state">
+                <span>▤</span>
+                <p>No cargo records available yet.</p>
+            </div>
+
+        {% endif %}
+
+    </section>
+
+    <section class="content-card activity-card">
+
+        <div class="card-heading">
+            <div>
+                <span class="section-tag">SYSTEM MONITORING</span>
+                <h3>Recent Cargo Events</h3>
+            </div>
+            <span class="card-symbol">◷</span>
+        </div>
+
+        {% for e in events[:6] %}
+
+            <div class="activity-item">
+
+                <div class="activity-dot"></div>
+
+                <div class="activity-details">
+                    <strong>
+                        {{ e.event_type|replace('_',' ')|title }}
+                    </strong>
+
+                    <p>
+                        {{ e.cargo_reference }}
+                        · {{ e.port_name or 'Port not specified' }}
+                    </p>
+
+                    <small>{{ e.event_time }}</small>
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+                <span>◷</span>
+                <p>No recent events recorded.</p>
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+</div>
+
+<section class="content-card records-card">
+
+    <div class="card-heading records-heading">
+
+        <div>
+            <span class="section-tag">CARGO MANAGEMENT</span>
+            <h3>Recently Recorded Cargo</h3>
+            <p>Latest cargo entries registered in the system.</p>
+        </div>
+
+        <a class="view-button"
+           href="{{ url_for('cargo.listing') }}">
+            View All Cargo →
+        </a>
+
+    </div>
+
+    <div class="table-container">
+
+        <table class="cargo-table">
+
+            <thead>
+                <tr>
+                    <th>REFERENCE</th>
+                    <th>DESCRIPTION</th>
+                    <th>ORIGIN</th>
+                    <th>QUANTITY</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for c in recent[:8] %}
+
+                <tr>
+
+                    <td>
+                        <a href="{{ url_for('cargo.detail', cid=c.cargo_id) }}"
+                           class="reference-link">
+                            {{ c.cargo_reference }}
+                        </a>
+                    </td>
+
+                    <td>{{ c.description }}</td>
+
+                    <td>{{ c.origin_port or '—' }}</td>
+
+                    <td>
+                        {{ c.quantity }} {{ c.unit_of_measure }}
+                    </td>
+
+                    <td>
+                        <span class="status-badge">
+                            {{ c.current_status|replace('_',' ')|title }}
+                        </span>
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="5" class="table-empty">
+                        No cargo has been registered yet.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+{% endblock %}
