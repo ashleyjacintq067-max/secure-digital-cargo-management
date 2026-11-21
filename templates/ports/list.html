@@ -1,1 +1,62 @@
-{% extends "base.html" %}{% block title %}Ports{% endblock %}{% block content %}<div class="heading"><h1>Regional ports</h1>{% if current_user.role=='admin' %}<a class="primary" href="{{ url_for('ports.new') }}">Add port</a>{% endif %}</div><section class="panel"><table><tr><th>Port</th><th>Country</th><th>Region</th><th>Code</th></tr>{% for p in rows %}<tr><td>{{ p.port_name }}</td><td>{{ p.country }}</td><td>{{ p.region or '—' }}</td><td>{{ p.code or '—' }}</td></tr>{% else %}<tr><td colspan="4">No ports.</td></tr>{% endfor %}</table></section>{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Ports | SDCMS{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">PORT MANAGEMENT</p>
+        <h1>Regional Ports</h1>
+        <p class="page-description">View and manage registered ports.</p>
+    </div>
+
+    {% if current_user.role == 'admin' %}
+    <a class="primary" href="{{ url_for('ports.new') }}">+ Add Port</a>
+    {% endif %}
+</div>
+
+<section class="panel cargo-panel">
+
+    <div class="section-heading">
+        <div>
+            <h2>Registered Ports</h2>
+            <p>All ports currently in the system.</p>
+        </div>
+    </div>
+
+    <div class="scroll">
+        <table class="cargo-table">
+
+            <thead>
+                <tr>
+                    <th>Port</th>
+                    <th>Country</th>
+                    <th>Region</th>
+                    <th>Code</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for p in rows %}
+                <tr>
+                    <td><strong>{{ p.port_name }}</strong></td>
+                    <td>{{ p.country }}</td>
+                    <td>{{ p.region or '—' }}</td>
+                    <td>
+                        <span class="cargo-status">{{ p.code or '—' }}</span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="empty-state">No ports registered yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</section>
+
+{% endblock %}
