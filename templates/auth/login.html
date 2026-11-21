@@ -1,1 +1,68 @@
-{% extends "base.html" %}{% block title %}Sign in{% endblock %}{% block content %}<section class="panel login"><p class="eyebrow">REGIONAL PORT AUTHORITY</p><h1>System sign in</h1><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Username<input name="username" required autocomplete="username"></label><label>Password<input name="password" type="password" required autocomplete="current-password"></label><button class="primary">Sign in</button></form><p class="muted">Ask your system administrator for an account.</p></section>{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}System Sign In{% endblock %}
+
+{% block content %}
+<section class="login-page">
+
+    <div class="login-panel">
+
+        <div class="login-logo">
+            <span class="anchor-icon">⚓</span>
+        </div>
+
+        <p class="eyebrow">REGIONAL PORT AUTHORITY</p>
+
+        <h1>Digital <span>Cargo</span></h1>
+        <h2>MANAGEMENT SYSTEM</h2>
+
+        <p class="login-subtitle">Secure • Monitor • Deliver</p>
+
+        <div class="login-divider"></div>
+
+        <h3>System Sign In</h3>
+
+        <form method="post">
+
+            <input type="hidden"
+                   name="csrf_token"
+                   value="{{ csrf_token() }}">
+
+            <label>
+                Username
+                <input
+                    name="username"
+                    type="text"
+                    placeholder="Enter your username"
+                    required
+                    autocomplete="username">
+            </label>
+
+            <label>
+                Password
+                <input
+                    name="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="current-password">
+            </label>
+
+            <button type="submit" class="login-button">
+                Sign In →
+            </button>
+
+        </form>
+
+        <p class="login-note">
+            Ask your system administrator for an account.
+        </p>
+
+        <div class="login-footer">
+            SECURE CARGO. SAFER PORTS.
+        </div>
+
+    </div>
+
+</section>
+{% endblock %}
