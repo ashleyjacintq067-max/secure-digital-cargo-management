@@ -1,8 +1,6 @@
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash
 from db import get_db
-
-
 class User(UserMixin):
     def __init__(self, row):
         self.id = str(row["user_id"])

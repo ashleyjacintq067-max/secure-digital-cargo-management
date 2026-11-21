@@ -1,1 +1,178 @@
-{% extends "base.html" %}{% block title %}Cargo form{% endblock %}{% block content %}<h1>{{ 'Edit cargo' if record else 'Record cargo' }}</h1><form method="post" class="panel form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Reference<input name="cargo_reference" required value="{{ record.cargo_reference if record else '' }}" {% if record %}readonly{% endif %}></label><label>Description<input name="description" required value="{{ record.description if record else '' }}"></label><label>Cargo type<input name="cargo_type" value="{{ record.cargo_type if record else '' }}"></label><label>Quantity<input name="quantity" type="number" min="0" step="0.01" required value="{{ record.quantity if record else '' }}"></label><label>Unit<input name="unit_of_measure" value="{{ record.unit_of_measure if record else 'units' }}"></label><label>Origin port<select name="origin_port_id"><option value="">Unspecified</option>{% for p in ports %}<option value="{{ p.port_id }}" {% if record and record.origin_port_id==p.port_id %}selected{% endif %}>{{ p.port_name }} — {{ p.country }}</option>{% endfor %}</select></label><label>Destination port<select name="destination_port_id"><option value="">Unspecified</option>{% for p in ports %}<option value="{{ p.port_id }}" {% if record and record.destination_port_id==p.port_id %}selected{% endif %}>{{ p.port_name }} — {{ p.country }}</option>{% endfor %}</select></label><label>Vessel<select name="vessel_id"><option value="">Unspecified</option>{% for v in vessels %}<option value="{{ v.vessel_id }}" {% if record and record.vessel_id==v.vessel_id %}selected{% endif %}>{{ v.vessel_name }}</option>{% endfor %}</select></label><label>Status<select name="current_status">{% for s in statuses %}<option value="{{ s }}" {% if record and record.current_status==s %}selected{% elif not record and s=='recorded' %}selected{% endif %}>{{ s|replace('_',' ')|title }}</option>{% endfor %}</select></label><label class="wide">Notes<textarea name="notes">{{ record.notes if record else '' }}</textarea></label><button class="primary wide">Save cargo</button></form>{% endblock %}
+
+{% extends "base.html" %}
+
+{% block title %}Cargo Form | SDCMS{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">CARGO MANAGEMENT</p>
+        <h1>{{ 'Edit Cargo' if record else 'Record New Cargo' }}</h1>
+        <p class="page-description">
+            Enter and verify the cargo information below.
+        </p>
+    </div>
+
+    <a href="{{ url_for('cargo.listing') }}" class="view-button">
+        ← Back to Register
+    </a>
+</div>
+
+<form method="post" class="panel form cargo-form">
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="form-section-heading">
+        <span>01</span>
+        <div>
+            <h2>Cargo Information</h2>
+            <p>Basic identification and quantity details.</p>
+        </div>
+    </div>
+
+    <div class="cargo-form-grid">
+
+        <label>
+            Cargo Reference *
+            <input
+                name="cargo_reference"
+                required
+                value="{{ record.cargo_reference if record else '' }}"
+                {% if record %}readonly{% endif %}
+                placeholder="Enter cargo reference">
+        </label>
+
+        <label>
+            Cargo Type
+            <input
+                name="cargo_type"
+                value="{{ record.cargo_type if record else '' }}"
+                placeholder="Enter cargo type">
+        </label>
+
+        <label class="wide">
+            Description *
+            <input
+                name="description"
+                required
+                value="{{ record.description if record else '' }}"
+                placeholder="Describe the cargo">
+        </label>
+
+        <label>
+            Quantity *
+            <input
+                name="quantity"
+                type="number"
+                min="0"
+                step="0.01"
+                required
+                value="{{ record.quantity if record else '' }}"
+                placeholder="Enter quantity">
+        </label>
+
+        <label>
+            Unit of Measure
+            <input
+                name="unit_of_measure"
+                value="{{ record.unit_of_measure if record else 'units' }}"
+                placeholder="e.g. units, tonnes">
+        </label>
+
+    </div>
+
+    <div class="form-divider"></div>
+
+    <div class="form-section-heading">
+        <span>02</span>
+        <div>
+            <h2>Port and Vessel Details</h2>
+            <p>Specify the cargo's origin, destination and vessel.</p>
+        </div>
+    </div>
+
+    <div class="cargo-form-grid">
+
+        <label>
+            Origin Port
+            <select name="origin_port_id">
+                <option value="">Unspecified</option>
+                {% for p in ports %}
+                <option
+                    value="{{ p.port_id }}"
+                    {% if record and record.origin_port_id == p.port_id %}selected{% endif %}>
+                    {{ p.port_name }} — {{ p.country }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>
+            Destination Port
+            <select name="destination_port_id">
+                <option value="">Unspecified</option>
+                {% for p in ports %}
+                <option
+                    value="{{ p.port_id }}"
+                    {% if record and record.destination_port_id == p.port_id %}selected{% endif %}>
+                    {{ p.port_name }} — {{ p.country }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>
+            Vessel
+            <select name="vessel_id">
+                <option value="">Unspecified</option>
+                {% for v in vessels %}
+                <option
+                    value="{{ v.vessel_id }}"
+                    {% if record and record.vessel_id == v.vessel_id %}selected{% endif %}>
+                    {{ v.vessel_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>
+            Cargo Status
+            <select name="current_status">
+                {% for s in statuses %}
+                <option
+                    value="{{ s }}"
+                    {% if record and record.current_status == s %}
+                    selected
+                    {% elif not record and s == 'recorded' %}
+                    selected
+                    {% endif %}>
+                    {{ s|replace('_', ' ')|title }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label class="wide">
+            Additional Notes
+            <textarea
+                name="notes"
+                rows="4"
+                placeholder="Enter any additional cargo information...">{{ record.notes if record else '' }}</textarea>
+        </label>
+
+    </div>
+
+    <div class="form-actions">
+        <a href="{{ url_for('cargo.listing') }}" class="view-button">
+            Cancel
+        </a>
+
+        <button type="submit" class="primary">
+            Save Cargo →
+        </button>
+    </div>
+
+</form>
+
+{% endblock %}

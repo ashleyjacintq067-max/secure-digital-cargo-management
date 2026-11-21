@@ -1,1 +1,103 @@
-{% extends "base.html" %}{% block title %}Cargo register{% endblock %}{% block content %}<div class="heading"><h1>Cargo register</h1>{% if current_user.role in ['admin','port_officer'] %}<a class="primary" href="{{ url_for('cargo.new') }}">Record cargo</a>{% endif %}</div><section class="panel"><form class="filters"><input name="q" value="{{ q }}" placeholder="Search reference or description"><select name="status"><option value="">All statuses</option>{% for s in statuses %}<option value="{{ s }}" {% if status==s %}selected{% endif %}>{{ s|replace('_',' ')|title }}</option>{% endfor %}</select><button>Search</button></form><div class="scroll"><table><tr><th>Reference</th><th>Description</th><th>Origin</th><th>Destination</th><th>Vessel</th><th>Quantity</th><th>Status</th></tr>{% for c in rows %}<tr><td><a href="{{ url_for('cargo.detail',cid=c.cargo_id) }}">{{ c.cargo_reference }}</a></td><td>{{ c.description }}</td><td>{{ c.origin or '—' }}</td><td>{{ c.destination or '—' }}</td><td>{{ c.vessel_name or '—' }}</td><td>{{ c.quantity }} {{ c.unit_of_measure }}</td><td>{{ c.current_status }}</td></tr>{% else %}<tr><td colspan="7">No matching cargo records.</td></tr>{% endfor %}</table></div></section>{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Cargo Register | SDCMS{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">CARGO MANAGEMENT</p>
+        <h1>Cargo Register</h1>
+        <p class="page-description">View and manage registered cargo records.</p>
+    </div>
+
+    {% if current_user.role in ['admin', 'port_officer'] %}
+    <a class="primary" href="{{ url_for('cargo.new') }}">
+        + Record Cargo
+    </a>
+    {% endif %}
+</div>
+
+<section class="panel cargo-panel">
+
+    <div class="section-heading">
+        <div>
+            <h2>Registered Cargo</h2>
+            <p>Search and filter cargo records.</p>
+        </div>
+    </div>
+
+    <form class="filters cargo-filters" method="get">
+
+        <input
+            type="text"
+            name="q"
+            value="{{ q }}"
+            placeholder="Search reference or description">
+
+        <select name="status">
+            <option value="">All statuses</option>
+            {% for s in statuses %}
+            <option value="{{ s }}" {% if status == s %}selected{% endif %}>
+                {{ s|replace('_', ' ')|title }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="primary">Search</button>
+
+    </form>
+
+    <div class="scroll">
+        <table class="cargo-table">
+
+            <thead>
+                <tr>
+                    <th>Reference</th>
+                    <th>Description</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Vessel</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for c in rows %}
+                <tr>
+                    <td>
+                        <a class="cargo-reference"
+                           href="{{ url_for('cargo.detail', cid=c.cargo_id) }}">
+                            {{ c.cargo_reference }}
+                        </a>
+                    </td>
+
+                    <td>{{ c.description }}</td>
+                    <td>{{ c.origin or '—' }}</td>
+                    <td>{{ c.destination or '—' }}</td>
+                    <td>{{ c.vessel_name or '—' }}</td>
+                    <td>{{ c.quantity }} {{ c.unit_of_measure }}</td>
+
+                    <td>
+                        <span class="cargo-status">
+                            {{ c.current_status|replace('_', ' ')|title }}
+                        </span>
+                    </td>
+                </tr>
+
+                {% else %}
+                <tr>
+                    <td colspan="7" class="empty-state">
+                        No matching cargo records found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</section>
+
+{% endblock %}

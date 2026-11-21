@@ -1,1 +1,214 @@
-{% extends "base.html" %}{% block title %}Cargo {{ r.cargo_reference }}{% endblock %}{% block content %}<div class="heading"><div><p class="eyebrow">CARGO RECORD</p><h1>{{ r.cargo_reference }}</h1><p>{{ r.description }}</p></div>{% if current_user.role in ['admin','port_officer'] %}<a class="primary" href="{{ url_for('cargo.edit',cid=r.cargo_id) }}">Edit record</a>{% endif %}</div><div class="columns"><section class="panel"><h2>Record details</h2><p>Type: {{ r.cargo_type or '—' }}</p><p>Quantity: {{ r.quantity }} {{ r.unit_of_measure }}</p><p>Origin: {{ r.origin or '—' }}</p><p>Destination: {{ r.destination or '—' }}</p><p>Vessel: {{ r.vessel_name or '—' }}</p><p>Status: {{ r.current_status }}</p><p>Recorded: {{ r.recorded_at }}</p><p>Notes: {{ r.notes or '—' }}</p></section><section class="panel"><h2>Add event</h2>{% if current_user.role in ['admin','port_officer'] %}<form method="post" action="{{ url_for('cargo.add_event',cid=r.cargo_id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Event type<input name="event_type" required placeholder="inspection_completed"></label><label>Port<select name="port_id"><option value="">Unspecified</option>{% for p in ports %}<option value="{{ p.port_id }}">{{ p.port_name }}</option>{% endfor %}</select></label><label>Details<textarea name="details"></textarea></label><button class="primary">Add event</button></form>{% else %}<p>View-only account.</p>{% endif %}</section></div><section class="panel"><h2>Event history</h2>{% for e in events %}<p><b>{{ e.event_type }}</b> — {{ e.port_name or 'Unspecified port' }}<br><small>{{ e.details }} · {{ e.event_time }} · {{ e.username }}</small></p>{% else %}<p>No events recorded.</p>{% endfor %}</section>{% if current_user.role=='admin' %}<form method="post" action="{{ url_for('cargo.delete',cid=r.cargo_id) }}" data-confirm="Delete this cargo record and its event history?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="danger">Delete cargo</button></form>{% endif %}{% endblock %}
+
+{% extends "base.html" %}
+
+{% block title %}Cargo {{ r.cargo_reference }} | SDCMS{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">CARGO MANAGEMENT / RECORD DETAILS</p>
+        <h1>{{ r.cargo_reference }}</h1>
+        <p class="page-description">{{ r.description }}</p>
+    </div>
+
+    <div class="detail-actions">
+        <a href="{{ url_for('cargo.listing') }}" class="view-button">
+            ← Back
+        </a>
+
+        {% if current_user.role in ['admin', 'port_officer'] %}
+        <a class="primary" href="{{ url_for('cargo.edit', cid=r.cargo_id) }}">
+            Edit Record
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="cargo-detail-grid">
+
+    <section class="panel cargo-detail-card">
+
+        <div class="detail-card-heading">
+            <div>
+                <span class="detail-icon">▣</span>
+                <h2>Cargo Information</h2>
+            </div>
+            <span class="cargo-status">
+                {{ r.current_status|replace('_', ' ')|title }}
+            </span>
+        </div>
+
+        <div class="detail-information-grid">
+
+            <div class="detail-information">
+                <small>Cargo Reference</small>
+                <strong>{{ r.cargo_reference }}</strong>
+            </div>
+
+            <div class="detail-information">
+                <small>Cargo Type</small>
+                <strong>{{ r.cargo_type or '—' }}</strong>
+            </div>
+
+            <div class="detail-information">
+                <small>Quantity</small>
+                <strong>{{ r.quantity }} {{ r.unit_of_measure }}</strong>
+            </div>
+
+            <div class="detail-information">
+                <small>Origin Port</small>
+                <strong>{{ r.origin or '—' }}</strong>
+            </div>
+
+            <div class="detail-information">
+                <small>Destination Port</small>
+                <strong>{{ r.destination or '—' }}</strong>
+            </div>
+
+            <div class="detail-information">
+                <small>Vessel</small>
+                <strong>{{ r.vessel_name or '—' }}</strong>
+            </div>
+
+            <div class="detail-information">
+                <small>Date Recorded</small>
+                <strong>{{ r.recorded_at or '—' }}</strong>
+            </div>
+
+            <div class="detail-information wide">
+                <small>Additional Notes</small>
+                <strong>{{ r.notes or 'No additional notes available.' }}</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="panel cargo-event-form">
+
+        <div class="detail-card-heading">
+            <div>
+                <span class="detail-icon">＋</span>
+                <h2>Record New Event</h2>
+            </div>
+        </div>
+
+        {% if current_user.role in ['admin', 'port_officer'] %}
+
+        <form method="post"
+              action="{{ url_for('cargo.add_event', cid=r.cargo_id) }}">
+
+            <input type="hidden" name="csrf_token"
+                   value="{{ csrf_token() }}">
+
+            <label>
+                Event Type
+                <input name="event_type" required
+                       placeholder="e.g. inspection_completed">
+            </label>
+
+            <label>
+                Port
+                <select name="port_id">
+                    <option value="">Unspecified</option>
+                    {% for p in ports %}
+                    <option value="{{ p.port_id }}">
+                        {{ p.port_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>
+                Event Details
+                <textarea name="details" rows="5"
+                          placeholder="Enter event information..."></textarea>
+            </label>
+
+            <button type="submit" class="primary event-submit">
+                + Add Event
+            </button>
+
+        </form>
+
+        {% else %}
+        <p class="view-only-note">This account has view-only access.</p>
+        {% endif %}
+
+    </section>
+
+</div>
+
+<section class="panel cargo-history-panel">
+
+    <div class="section-heading">
+        <h2>Event History</h2>
+        <p>Recorded activities and cargo record updates.</p>
+    </div>
+
+    <div class="event-timeline">
+
+        {% for e in events %}
+
+        <div class="event-entry">
+
+            <div class="event-marker"></div>
+
+            <div class="event-content">
+                <div class="event-title-row">
+                    <strong>{{ e.event_type|replace('_', ' ')|title }}</strong>
+                    <small>{{ e.event_time }}</small>
+                </div>
+
+                <p>{{ e.details or 'No additional details.' }}</p>
+
+                <div class="event-meta">
+                    <span>Port: {{ e.port_name or 'Unspecified port' }}</span>
+                    <span>Recorded by: {{ e.username }}</span>
+                </div>
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <div class="history-empty">
+            <span>◷</span>
+            <h3>No Events Recorded</h3>
+            <p>There are currently no events associated with this cargo record.</p>
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% if current_user.role == 'admin' %}
+
+<section class="cargo-danger-zone">
+
+    <div>
+        <h3>Danger Zone</h3>
+        <p>Delete this cargo record and its event history.</p>
+    </div>
+
+    <form method="post"
+          action="{{ url_for('cargo.delete', cid=r.cargo_id) }}"
+          data-confirm="Delete this cargo record and its event history?">
+
+        <input type="hidden" name="csrf_token"
+               value="{{ csrf_token() }}">
+
+        <button type="submit" class="danger">
+            Delete Cargo
+        </button>
+
+    </form>
+
+</section>
+
+{% endif %}
+
+{% endblock %}
