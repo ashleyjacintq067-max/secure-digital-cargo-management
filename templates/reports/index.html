@@ -1,1 +1,60 @@
-{% extends "base.html" %}{% block title %}Reports{% endblock %}{% block content %}<div class="heading"><h1>Cargo reports</h1><a class="primary" href="{{ url_for('reports.export') }}">Export CSV</a></div><section class="panel"><table><tr><th>Status</th><th>Records</th><th>Total quantity</th></tr>{% for r in rows %}<tr><td>{{ r.current_status }}</td><td>{{ r.total }}</td><td>{{ r.quantity or 0 }}</td></tr>{% else %}<tr><td colspan="3">No report data.</td></tr>{% endfor %}</table></section>{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Reports | SDCMS{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">ANALYTICS</p>
+        <h1>Cargo Reports</h1>
+        <p class="page-description">Cargo totals grouped by status.</p>
+    </div>
+
+    <a class="primary" href="{{ url_for('reports.export') }}">Export CSV</a>
+</div>
+
+<section class="panel cargo-panel">
+
+    <div class="section-heading">
+        <div>
+            <h2>Status Summary</h2>
+            <p>Number of records and total quantity for each status.</p>
+        </div>
+    </div>
+
+    <div class="scroll">
+        <table class="cargo-table">
+
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Records</th>
+                    <th>Total Quantity</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for r in rows %}
+                <tr>
+                    <td>
+                        <span class="cargo-status">
+                            {{ r.current_status|replace('_', ' ')|title }}
+                        </span>
+                    </td>
+                    <td>{{ r.total }}</td>
+                    <td>{{ r.quantity or 0 }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="empty-state">No report data yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,1 +1,60 @@
-{% extends "base.html" %}{% block title %}Vessels{% endblock %}{% block content %}<div class="heading"><h1>Vessels</h1>{% if current_user.role in ['admin','port_officer'] %}<a class="primary" href="{{ url_for('vessels.new') }}">Add vessel</a>{% endif %}</div><section class="panel"><table><tr><th>Name</th><th>Identifier</th><th>Flag country</th></tr>{% for v in rows %}<tr><td>{{ v.vessel_name }}</td><td>{{ v.vessel_identifier or '—' }}</td><td>{{ v.flag_country or '—' }}</td></tr>{% else %}<tr><td colspan="3">No vessels.</td></tr>{% endfor %}</table></section>{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Vessels | SDCMS{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">FLEET MANAGEMENT</p>
+        <h1>Vessels</h1>
+        <p class="page-description">View and manage registered vessels.</p>
+    </div>
+
+    {% if current_user.role in ['admin', 'port_officer'] %}
+    <a class="primary" href="{{ url_for('vessels.new') }}">+ Add Vessel</a>
+    {% endif %}
+</div>
+
+<section class="panel cargo-panel">
+
+    <div class="section-heading">
+        <div>
+            <h2>Registered Vessels</h2>
+            <p>All vessels currently in the system.</p>
+        </div>
+    </div>
+
+    <div class="scroll">
+        <table class="cargo-table">
+
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Identifier</th>
+                    <th>Flag Country</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for v in rows %}
+                <tr>
+                    <td><strong>{{ v.vessel_name }}</strong></td>
+                    <td>
+                        <span class="cargo-status">{{ v.vessel_identifier or '—' }}</span>
+                    </td>
+                    <td>{{ v.flag_country or '—' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="empty-state">No vessels registered yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</section>
+
+{% endblock %}
