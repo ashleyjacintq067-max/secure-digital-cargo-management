@@ -1,1 +1,50 @@
-{% extends "base.html" %}{% block content %}<h1>Add port</h1><form method="post" class="panel form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Port name<input name="port_name" required></label><label>Country<input name="country" required></label><label>Region<input name="region"></label><label>Port code<input name="code"></label><button class="primary">Save port</button></form>{% endblock %}
+{% extends "base.html" %}
+
+{% block title %}Add Port | SDCMS{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">PORT MANAGEMENT</p>
+        <h1>Add Port</h1>
+        <p class="page-description">Register a new port in the system.</p>
+    </div>
+</div>
+
+<form method="post" class="cargo-panel cargo-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="form-section-heading">
+        <span>⚓</span>
+        <div>
+            <h2>Port details</h2>
+            <p>Enter the details of the port you want to register.</p>
+        </div>
+    </div>
+
+    <div class="cargo-form-grid">
+        <label>Port name
+            <input name="port_name" placeholder="Mombasa" required>
+        </label>
+
+        <label>Country
+            <input name="country" placeholder="Kenya" required>
+        </label>
+
+        <label>Region
+            <input name="region" placeholder="Coast">
+        </label>
+
+        <label>Port code
+            <input name="code" placeholder="KEMBA">
+        </label>
+    </div>
+
+    <div class="form-actions">
+        <a href="{{ url_for('ports.listing') }}" style="color:#64748B;text-decoration:none;font-size:12px;">Cancel</a>
+        <button type="submit" class="primary">Save port</button>
+    </div>
+</form>
+
+{% endblock %}
