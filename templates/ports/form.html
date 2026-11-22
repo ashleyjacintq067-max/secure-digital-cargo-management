@@ -1,14 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}Add Port | SDCMS{% endblock %}
+{% set p = port if port is defined else none %}
+
+{% block title %}{{ 'Edit Port' if p else 'Add Port' }} | SDCMS{% endblock %}
 
 {% block content %}
 
 <div class="page-heading">
     <div>
         <p class="eyebrow">PORT MANAGEMENT</p>
-        <h1>Add Port</h1>
-        <p class="page-description">Register a new port in the system.</p>
+        <h1>{{ 'Edit Port' if p else 'Add Port' }}</h1>
+        <p class="page-description">
+            {{ 'Correct the details of this port.' if p else 'Register a new port in the system.' }}
+        </p>
     </div>
 </div>
 
@@ -19,31 +23,31 @@
         <span>⚓</span>
         <div>
             <h2>Port details</h2>
-            <p>Enter the details of the port you want to register.</p>
+            <p>{{ 'Update the fields you want to change.' if p else 'Enter the details of the port you want to register.' }}</p>
         </div>
     </div>
 
     <div class="cargo-form-grid">
         <label>Port name
-            <input name="port_name" placeholder="Mombasa" required>
+            <input name="port_name" placeholder="Mombasa" value="{{ p.port_name if p else '' }}" required>
         </label>
 
         <label>Country
-            <input name="country" placeholder="Kenya" required>
+            <input name="country" placeholder="Kenya" value="{{ p.country if p else '' }}" required>
         </label>
 
         <label>Region
-            <input name="region" placeholder="Coast">
+            <input name="region" placeholder="Coast" value="{{ (p.region or '') if p else '' }}">
         </label>
 
         <label>Port code
-            <input name="code" placeholder="KEMBA">
+            <input name="code" placeholder="KEMBA" value="{{ (p.code or '') if p else '' }}">
         </label>
     </div>
 
     <div class="form-actions">
         <a href="{{ url_for('ports.listing') }}" style="color:#64748B;text-decoration:none;font-size:12px;">Cancel</a>
-        <button type="submit" class="primary">Save port</button>
+        <button type="submit" class="primary">{{ 'Save changes' if p else 'Save port' }}</button>
     </div>
 </form>
 

@@ -34,6 +34,7 @@
                     <th>Country</th>
                     <th>Region</th>
                     <th>Code</th>
+                    {% if current_user.role == 'admin' %}<th>Actions</th>{% endif %}
                 </tr>
             </thead>
 
@@ -46,10 +47,13 @@
                     <td>
                         <span class="cargo-status">{{ p.code or '—' }}</span>
                     </td>
+                    {% if current_user.role == 'admin' %}
+                    <td><a class="cargo-reference" href="{{ url_for('ports.edit', pid=p.pid) }}">Edit</a></td>
+                    {% endif %}
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="4" class="empty-state">No ports registered yet.</td>
+                    <td colspan="5" class="empty-state">No ports registered yet.</td>
                 </tr>
                 {% endfor %}
             </tbody>
