@@ -1,71 +1,149 @@
-
 {% extends "base.html" %}
 
-{% block title %}System Sign In{% endblock %}
+{% block title %}Sign in | SDCMS{% endblock %}
 
 {% block guest_content %}
+<style>
+body:has(.sd-login){margin:0;background:#06142f}
+body:has(.sd-login) header,
+body:has(.sd-login) footer,
+body:has(.sd-login) main > .flash{display:none}
+body:has(.sd-login) main{max-width:none;width:100%;margin:0;padding:0;min-height:0}
 
-<section class="login-page">
+.sd-login{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    padding:24px 6vw;
+    box-sizing:border-box;
+    background:url("{{ url_for('static', filename='css/images/login-bg.png') }}") center/cover no-repeat;
+    font-family:"Segoe UI",Arial,sans-serif;
+}
 
-    <div class="login-panel">
+.sd-card{
+    width:100%;
+    max-width:340px;
+    box-sizing:border-box;
+    padding:22px 24px;
+    border-radius:20px;
+    background:rgba(13,45,110,.55);
+    border:1px solid rgba(120,190,255,.55);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    box-shadow:0 0 28px rgba(40,120,255,.25);
+    color:#fff;
+    text-align:center;
+}
 
-        <div class="login-logo">
-            <span class="anchor-icon">⚓</span>
-        </div>
+.sd-logo{width:46px;height:46px;display:block;margin:0 auto 4px}
+.sd-brand{font-size:26px;font-weight:800;letter-spacing:1px;margin:0;color:#fff}
+.sd-rule{height:1px;background:#3fc8ff;margin:6px 0 8px}
+.sd-authority{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#cfe4ff;margin:0 0 12px}
+.sd-title{font-size:20px;line-height:1.2;font-weight:700;margin:0 0 6px;color:#fff}
+.sd-tag{font-size:12px;font-style:italic;color:#6fd0ff;margin:0 0 16px}
 
-        <p class="eyebrow">REGIONAL PORT AUTHORITY</p>
+.sd-field{position:relative;margin-bottom:12px}
+.sd-field svg{
+    position:absolute;left:12px;top:50%;transform:translateY(-50%);
+    width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2;
+}
+.sd-field input{
+    width:100%;box-sizing:border-box;height:42px;
+    padding:0 52px 0 38px;
+    border-radius:10px;
+    border:1px solid rgba(160,205,255,.6);
+    background:rgba(10,35,90,.55);
+    color:#fff;font-size:14px;outline:none;
+}
+.sd-field input::placeholder{color:#b7cdea}
+.sd-field input:focus{border-color:#3fc8ff;box-shadow:0 0 0 3px rgba(63,200,255,.25)}
 
-        <h1>Digital <span>Cargo</span></h1>
-        <h2>MANAGEMENT SYSTEM</h2>
+.sd-eye{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    background:none;border:0;padding:4px;cursor:pointer;
+    color:#cfe4ff;font-size:12px;
+}
 
-        <p class="login-subtitle">Secure • Monitor • Deliver</p>
+.sd-btn{
+    width:100%;height:44px;border:0;border-radius:10px;margin-top:4px;
+    background:#1f6bff;color:#fff;font-size:15px;font-weight:700;cursor:pointer;
+    box-shadow:0 4px 14px rgba(31,107,255,.45);
+}
+.sd-btn:hover{background:#3a80ff}
 
-        <div class="login-divider"></div>
+.sd-foot{font-size:11px;color:#dbe9ff;margin:14px 0 0}
 
-        <h3>System Sign In</h3>
+.sd-msg{
+    padding:10px 12px;border-radius:8px;margin-bottom:12px;font-size:13px;
+    background:rgba(220,38,38,.25);border:1px solid rgba(255,120,120,.6);color:#ffe3e3;
+}
+.sd-msg.success{background:rgba(34,197,94,.22);border-color:rgba(120,230,160,.6);color:#e1ffe9}
 
-        <form method="post">
+@media (max-width:700px){
+    .sd-login{justify-content:center;padding:16px}
+    .sd-card{max-width:360px}
+}
+</style>
 
-            <input type="hidden"
-                   name="csrf_token"
-                   value="{{ csrf_token() }}">
+<div class="sd-login">
+    <div class="sd-card">
 
-            <label>
-                Username
-                <input
-                    name="username"
-                    type="text"
-                    placeholder="Enter your username"
-                    required
-                    autocomplete="username">
-            </label>
+        <svg class="sd-logo" viewBox="0 0 48 48" aria-hidden="true">
+            <path d="M24 3l18 6v14c0 11-8 18-18 22C14 41 6 34 6 23V9z" fill="#10409a" stroke="#3fc8ff" stroke-width="2"/>
+            <circle cx="24" cy="15" r="3" fill="none" stroke="#fff" stroke-width="2"/>
+            <path d="M24 18v17M18 23h12M14 29c1 6 19 6 20 0" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
 
-            <label>
-                Password
-                <input
-                    name="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    required
-                    autocomplete="current-password">
-            </label>
+        <h1 class="sd-brand">SDCMS</h1>
+        <div class="sd-rule"></div>
+        <p class="sd-authority">Regional port authority</p>
 
-            <button type="submit" class="login-button">
-                Sign In →
-            </button>
+        <h2 class="sd-title">Digital Cargo<br>Management System</h2>
+        <p class="sd-tag">Secure • Monitor • Deliver</p>
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="sd-msg {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('auth.login') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="sd-field">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 21c0-4 4-7 8-7s8 3 8 7"/>
+                </svg>
+                <input type="text" name="username" placeholder="Username"
+                       autocomplete="username" required autofocus>
+            </div>
+
+            <div class="sd-field">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="5" y="11" width="14" height="10" rx="2"/>
+                    <path d="M8 11V8a4 4 0 018 0v3"/>
+                </svg>
+                <input type="password" id="sd-pw" name="password" placeholder="Password"
+                       autocomplete="current-password" required>
+                <button type="button" class="sd-eye" onclick="sdToggle(this)">Show</button>
+            </div>
+
+            <button class="sd-btn" type="submit">Sign in →</button>
         </form>
 
-        <p class="login-note">
-            Ask your system administrator for an account.
-        </p>
-
-        <div class="login-footer">
-            SECURE CARGO. SAFER PORTS.
-        </div>
+        <p class="sd-foot">Secure Cargo. Safer Ports.</p>
 
     </div>
+</div>
 
-</section>
-
+<script>
+function sdToggle(b){
+    var i = document.getElementById('sd-pw');
+    var show = i.type === 'password';
+    i.type = show ? 'text' : 'password';
+    b.textContent = show ? 'Hide' : 'Show';
+}
+</script>
 {% endblock %}
