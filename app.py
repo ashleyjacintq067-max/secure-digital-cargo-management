@@ -1,4 +1,3 @@
-
 import os
 
 from flask import Flask, redirect, url_for, render_template
@@ -36,8 +35,9 @@ def create_app():
     from routes.vessels import bp as vessels
     from routes.reports import bp as reports
     from routes.audit import bp as audit
+    from routes.users import bp as users
 
-    for b in (auth, dashboard, cargo, ports, vessels, reports, audit):
+    for b in (auth, dashboard, cargo, ports, vessels, reports, audit, users):
         app.register_blueprint(b)
 
     @app.route("/")
