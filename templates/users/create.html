@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Add User | SDCMS{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <div>
+        <p class="eyebrow">ADMINISTRATION</p>
+        <h1>Add User</h1>
+        <p class="page-description">Create a new account and choose what they can do.</p>
+    </div>
+</div>
+
+<form method="post" class="cargo-panel cargo-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="form-section-heading">
+        <span>👤</span>
+        <div>
+            <h2>Account details</h2>
+            <p>Passwords must have at least 12 characters.</p>
+        </div>
+    </div>
+
+    <div class="cargo-form-grid">
+        <label>Full name
+            <input name="full_name" placeholder="Grace Wanjiku" required>
+        </label>
+
+        <label>Username
+            <input name="username" placeholder="grace.wanjiku" autocomplete="off" required>
+        </label>
+
+        <label>Role
+            <select name="role" required>
+                {% for r in roles %}
+                <option value="{{ r }}">{{ r|replace('_', ' ')|title }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <span></span>
+
+        <label>Password
+            <input type="password" name="password" autocomplete="new-password" required>
+        </label>
+
+        <label>Confirm password
+            <input type="password" name="confirm_password" autocomplete="new-password" required>
+        </label>
+    </div>
+
+    <div class="form-actions">
+        <a href="{{ url_for('users.listing') }}" style="color:#64748B;text-decoration:none;font-size:12px;">Cancel</a>
+        <button type="submit" class="primary">Create account</button>
+    </div>
+</form>
+
+{% endblock %}
