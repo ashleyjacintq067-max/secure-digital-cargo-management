@@ -76,7 +76,12 @@ body:has(.sd-login) main{max-width:none;width:100%;margin:0;padding:0;min-height
 }
 .sd-field input::placeholder{color:#b7cdea}
 .sd-field input:focus{border-color:#3fc8ff;box-shadow:0 0 0 3px rgba(63,200,255,.25)}
-
+.sd-field input:-webkit-autofill{
+    -webkit-text-fill-color:#fff;
+    caret-color:#fff;
+    box-shadow:0 0 0 100px #12307a inset;
+    border-color:rgba(160,205,255,.6);
+}
 .sd-eye{
     position:absolute;right:8px;top:50%;transform:translateY(-50%);
     background:none;border:0;padding:4px;cursor:pointer;
