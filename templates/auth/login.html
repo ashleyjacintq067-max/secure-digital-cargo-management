@@ -5,7 +5,7 @@
 {% block guest_content %}
 <style>
 body:has(.sd-login){margin:0;background:#06142f}
-html,body{overflow-xhidden}
+html,body{overflow-x:hidden}
 body:has(.sd-login) header,
 body:has(.sd-login) footer,
 body:has(.sd-login) main > .flash{display:none}
@@ -18,7 +18,7 @@ body:has(.sd-login) main{max-width:none;width:100%;margin:0;padding:0;min-height
     justify-content:flex-end;
     padding:24px 6vw;
     box-sizing:border-box;
-    background:url("{{ url_for('static', filename='css/images/login-bg.png') }}") center/cover no-repeat;
+    background:#06142f url("{{ url_for('static', filename='css/images/login-bg.png') }}") center/cover no-repeat;
     font-family:"Segoe UI",Arial,sans-serif;
 }
 
