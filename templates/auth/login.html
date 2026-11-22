@@ -15,16 +15,33 @@ body:has(.sd-login) main{max-width:none;width:100%;margin:0;padding:0;min-height
     min-height:100vh;
     display:flex;
     align-items:center;
-    justify-content:flex-end;
-    padding:24px 6vw;
+    justify-content:center;
+    padding:12px;
     box-sizing:border-box;
-    background:#06142f url("{{ url_for('static', filename='css/images/login-bg.png') }}") center/cover no-repeat;
+    background:#06142f;
     font-family:"Segoe UI",Arial,sans-serif;
 }
 
+.sd-stage{
+    position:relative;
+    width:min(100%, calc((100vh - 24px) * 16 / 9), 1100px);
+    aspect-ratio:16 / 9;
+    border-radius:14px;
+    overflow:hidden;
+    background:#0b2a5b url("{{ url_for('static', filename='css/images/login-bg.png') }}") center/100% 100% no-repeat;
+    box-shadow:0 10px 40px rgba(0,0,0,.5);
+}
+
 .sd-card{
-    width:100%;
-    max-width:290px;
+    position:absolute;
+    right:4%;
+    top:50%;
+    transform:translateY(-50%);
+    width:30%;
+    min-width:250px;
+    max-width:300px;
+    max-height:96%;
+    overflow-y:auto;
     box-sizing:border-box;
     padding:18px 20px;
     border-radius:20px;
@@ -82,12 +99,28 @@ body:has(.sd-login) main{max-width:none;width:100%;margin:0;padding:0;min-height
 .sd-msg.success{background:rgba(34,197,94,.22);border-color:rgba(120,230,160,.6);color:#e1ffe9}
 
 @media (max-width:700px){
-    .sd-login{justify-content:center;padding:16px}
-    .sd-card{max-width:360px}
+    .sd-stage{
+        aspect-ratio:auto;
+        width:100%;
+        min-height:calc(100vh - 24px);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        background-size:cover;
+    }
+    .sd-card{
+        position:static;
+        transform:none;
+        width:100%;
+        min-width:0;
+        max-width:340px;
+        margin:16px;
+    }
 }
 </style>
 
 <div class="sd-login">
+  <div class="sd-stage">
     <div class="sd-card">
 
         <svg class="sd-logo" viewBox="0 0 48 48" aria-hidden="true">
@@ -137,6 +170,7 @@ body:has(.sd-login) main{max-width:none;width:100%;margin:0;padding:0;min-height
         <p class="sd-foot">Secure Cargo. Safer Ports.</p>
 
     </div>
+  </div>
 </div>
 
 <script>
