@@ -131,8 +131,16 @@ def create_app():
         except Exception:
             d.rollback()
             raise RuntimeError("Administrator account creation failed.")
-
+    # Refill demo data whenever the database starts empty (Render free plan resets it)
+    with app.app_context():
+        try:
+            init_db()
+            from seed import seed_demo
+            app.logger.warning("Seed: %s", seed_demo(get_db()))
+        except Exception as exc:
+            app.logger.warning("Seed error: %s", exc)
     return app
+
 
 
 app = create_app()
