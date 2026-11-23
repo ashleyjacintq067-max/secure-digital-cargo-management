@@ -1,4 +1,4 @@
-"""Loads demo data when the database is empty.
+"""Loads demo data when the database has no cargo records.
 Render's free plan resets the database on every restart, so this refills it."""
 import os
 from werkzeug.security import generate_password_hash
@@ -58,7 +58,7 @@ def seed_demo(db):
     if len(password) < 12:
         return "skipped: DEMO_PASSWORD not set (12+ characters needed)"
 
-    if db.execute("SELECT COUNT(*) FROM ports").fetchone()[0] > 0:
+    if db.execute("SELECT COUNT(*) FROM cargo_records").fetchone()[0] > 0:
         return "skipped: data already present"
 
     pw_hash = generate_password_hash(password)
@@ -66,3 +66,70 @@ def seed_demo(db):
     for username, full_name, role in USERS:
         db.execute(
             "INSERT OR IGNORE INTO users(username, full_name, password_hash, role) "
+            "VALUES(?,?,?,?)",
+            (username, full_name, pw_hash, role),
+        )
+
+    for row in PORTS:
+        db.execute(
+            "INSERT OR IGNORE INTO ports(port_name, country, region, code) "
+            "VALUES(?,?,?,?)",
+            row,
+        )
+
+    for row in VESSELS:
+        db.execute(
+            "INSERT OR IGNORE INTO vessels(vessel_name, vessel_identifier, flag_country) "
+            "VALUES(?,?,?)",
+            row,
+        )
+
+    def one(sql, params):
+        r = db.execute(sql, params).fetchone()
+        return r[0] if r else None
+
+    def port_id(code):
+        return one("SELECT port_id FROM ports WHERE code=?", (code,))
+
+    def vessel_id(ident):
+        return one("SELECT vessel_id FROM vessels WHERE vessel_identifier=?", (ident,))
+
+    officer = one("SELECT user_id FROM users WHERE username=?", ("grace.wanjiku",))
+
+    new_refs = set()
+    for ref, desc, ctype, qty, unit, o_code, d_code, v_ident, status, notes in CARGO:
+        cur = db.execute(
+            "INSERT OR IGNORE INTO cargo_records("
+            "cargo_reference, description, cargo_type, quantity, unit_of_measure, "
+            "origin_port_id, destination_port_id, vessel_id, recorded_by, "
+            "current_status, notes) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                ref, desc, ctype, qty, unit,
+                port_id(o_code), port_id(d_code), vessel_id(v_ident),
+                officer, status, notes,
+            ),
+        )
+        if cur.rowcount == 1:
+            new_refs.add(ref)
+
+    for ref, code, etype, details in EVENTS:
+        if ref in new_refs:
+            cid = one(
+                "SELECT cargo_id FROM cargo_records WHERE cargo_reference=?",
+                (ref,),
+            )
+            db.execute(
+                "INSERT INTO cargo_events("
+                "cargo_id, port_id, event_type, details, recorded_by) "
+                "VALUES(?,?,?,?,?)",
+                (cid, port_id(code), etype, details, officer),
+            )
+
+    if new_refs:
+        db.execute(
+            "INSERT INTO audit_logs(user_id, action, entity_type, details) "
+            "VALUES(NULL, 'SEED', 'system', 'Demo data loaded')"
+        )
+
+    db.commit()
+    return "demo data loaded"
