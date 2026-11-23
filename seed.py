@@ -1,5 +1,6 @@
 """Loads demo data when the database has no cargo records.
-Render's free plan resets the database on every restart, so this refills it."""
+Render's free plan resets the database on every restart, so this refills it.
+The five demo users always use the current DEMO_PASSWORD."""
 import os
 from werkzeug.security import generate_password_hash
 
@@ -58,10 +59,20 @@ def seed_demo(db):
     if len(password) < 12:
         return "skipped: DEMO_PASSWORD not set (12+ characters needed)"
 
-    if db.execute("SELECT COUNT(*) FROM cargo_records").fetchone()[0] > 0:
-        return "skipped: data already present"
-
     pw_hash = generate_password_hash(password)
+
+    # Always make sure existing demo accounts use the current DEMO_PASSWORD
+    reset = 0
+    for username, _name, _role in USERS:
+        cur = db.execute(
+            "UPDATE users SET password_hash=?, is_active=1 WHERE username=?",
+            (pw_hash, username),
+        )
+        reset += cur.rowcount
+    db.commit()
+
+    if db.execute("SELECT COUNT(*) FROM cargo_records").fetchone()[0] > 0:
+        return "skipped: data already present (demo passwords reset: %d)" % reset
 
     for username, full_name, role in USERS:
         db.execute(
